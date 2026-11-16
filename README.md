@@ -80,7 +80,7 @@ Este sistema foi construído sob medida para rodar **100% offline**, de forma in
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/SEU-USUARIO/sistema-estoque.git
+   git clone https://github.com/rafaaam019-a11y/sistema-estoque.git
    cd sistema-estoque
    ```
 
