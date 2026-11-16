@@ -1,0 +1,17 @@
+# Dependências
+node_modules/
+
+# Builds e Executáveis
+dist/
+
+# Logs e arquivos de sistema
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários de exportação
+backup-*.json
+relatorio-*.csv

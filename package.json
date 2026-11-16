@@ -1,0 +1,14 @@
+{
+  "name": "sistema-gestao-estoque",
+  "version": "1.0.0",
+  "description": "Sistema Desktop em Electron para controle de estoque, validade e vendas de produtos perecíveis",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "empacotar": "electron-packager . SistemaEstoque --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^45.3.2"
+  }
+}

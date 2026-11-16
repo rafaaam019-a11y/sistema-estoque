@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Gestão de Estoque</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="header-marca">
+        <div class="logo-icone" title="Sistema de Gestão de Estoque">🥚</div>
+        <div>
+          <h1>Sistema de Estoque</h1>
+          <p>Controle inteligente de validade, reposição e vendas</p>
+        </div>
+      </div>
+      <div class="header-acoes">
+        <button type="button" id="btn-exportar" class="btn-outline" title="Baixar cópia de segurança dos dados">
+          💾 Backup Dados
+        </button>
+        <button type="button" id="btn-acionar-importar" class="btn-outline" title="Restaurar dados de um arquivo JSON">
+          📂 Importar JSON
+        </button>
+        <button type="button" id="btn-exportar-csv" class="btn-outline" title="Exportar histórico de vendas para planilha CSV">
+          📊 Exportar Vendas (CSV)
+        </button>
+        <input type="file" id="input-importar" accept=".json" style="display: none;" />
+      </div>
+    </header>
+
+    <main>
+      <!-- Painel de Vendas e Faturamento -->
+      <section class="cartao">
+        <div class="cartao-cabecalho">
+          <h2>Vendas e Faturamento</h2>
+        </div>
+
+        <div class="resumo">
+          <div class="indicador">
+            <span>Faturamento total</span>
+            <strong id="fat-total">R$ 0,00</strong>
+          </div>
+          <div class="indicador">
+            <span>Faturamento de hoje</span>
+            <strong id="fat-hoje">R$ 0,00</strong>
+          </div>
+          <div class="indicador">
+            <span>Itens vendidos</span>
+            <strong id="itens-vendidos">0</strong>
+          </div>
+          <div class="indicador">
+            <span>Ticket médio</span>
+            <strong id="ticket-medio">R$ 0,00</strong>
+          </div>
+          <div class="indicador">
+            <span>Mais vendido</span>
+            <strong id="mais-vendido">-</strong>
+          </div>
+        </div>
+
+        <h3>Últimas vendas</h3>
+        <div class="tabela-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Data e Hora</th>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th>Preço un.</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-vendas"></tbody>
+          </table>
+        </div>
+        <p id="msg-sem-vendas" class="msg-vazio">Nenhuma venda registrada até o momento.</p>
+      </section>
+
+      <!-- Formulário de Cadastro / Edição -->
+      <section class="cartao" id="secao-formulario">
+        <div class="cartao-cabecalho">
+          <h2 id="form-titulo">Cadastrar Novo Produto</h2>
+          <span id="badge-modo" class="badge badge-info" style="display: none;">Modo Edição</span>
+        </div>
+
+        <form id="form-produto">
+          <input type="hidden" id="produto-id-edicao" value="" />
+          
+          <label class="col-span-2">
+            Nome do produto
+            <input type="text" id="nome" placeholder="Ex: Ovo caipira (dúzia)" required />
+          </label>
+
+          <label>
+            Preço (R$)
+            <input type="number" id="preco" step="0.01" min="0.01" placeholder="0,00" required />
+          </label>
+
+          <label>
+            Quantidade em estoque
+            <input type="number" id="quantidade" min="0" placeholder="0" required />
+          </label>
+
+          <label>
+            Data de validade
+            <input type="date" id="validade" required />
+          </label>
+
+          <label>
+            Estoque mínimo (alerta)
+            <input type="number" id="estoque-minimo" min="1" value="8" required />
+          </label>
+
+          <label>
+            Estoque ideal (meta)
+            <input type="number" id="estoque-ideal" min="1" value="40" required />
+          </label>
+
+          <div class="form-botoes col-span-all">
+            <button type="submit" id="btn-submit-form" class="btn-principal">Cadastrar Produto</button>
+            <button type="button" id="btn-cancelar-edicao" class="btn-secundario" style="display: none;">Cancelar Edição</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Seção de Avisos -->
+      <section class="cartao">
+        <div class="cartao-cabecalho">
+          <h2>Painel de Alertas</h2>
+        </div>
+        <div class="avisos">
+          <div class="bloco-aviso">
+            <h3>⏳ Controle de Validade</h3>
+            <ul id="lista-validade"></ul>
+          </div>
+          <div class="bloco-aviso">
+            <h3>📦 Ponto de Reposição</h3>
+            <ul id="lista-reposicao"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabela de Estoque Atual com Filtros e Busca -->
+      <section class="cartao">
+        <div class="cartao-cabecalho">
+          <h2>Estoque Atual</h2>
+          <span class="contador-produtos" id="total-itens-estoque">0 produtos</span>
+        </div>
+
+        <div class="controles-tabela">
+          <div class="campo-busca">
+            <input type="search" id="filtro-busca" placeholder="🔍 Buscar por nome do produto..." />
+          </div>
+          <div class="filtros-status">
+            <button type="button" class="btn-filtro ativo" data-filtro="todos">Todos</button>
+            <button type="button" class="btn-filtro" data-filtro="atencao">⚠️ Próximos de Vencer</button>
+            <button type="button" class="btn-filtro" data-filtro="vencidos">⛔ Vencidos</button>
+            <button type="button" class="btn-filtro" data-filtro="repor">📉 Reposição</button>
+          </div>
+        </div>
+
+        <div class="tabela-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Qtd</th>
+                <th>Mín / Ideal</th>
+                <th>Validade</th>
+                <th>Situação</th>
+                <th style="min-width: 280px;">Ações Rápidas</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-estoque"></tbody>
+          </table>
+        </div>
+        <p id="msg-vazio" class="msg-vazio">Nenhum produto encontrado.</p>
+      </section>
+    </main>
+
+    <!-- Notificações Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
